@@ -16,6 +16,5 @@
       <Label layoutX="25.0" layoutY="180.0" text="Размер документа" />
       <Label layoutX="249.0" layoutY="25.0" text="Очередь на печать" />
       <Label layoutX="406.0" layoutY="25.0" text="Напечатанные документы" />
-      <Label fx:id="qqqLable" layoutX="38.0" layoutY="343.0" text="Label" />
    </children>
 </AnchorPane>

@@ -1,5 +1,6 @@
 package org.dmiitr3iy.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,19 +17,16 @@ import java.util.Collections;
 
 public class MainController {
     @FXML
-    public ListView<Document> listViewDocuments= new ListView<>(FXCollections.emptyObservableList());
+    public ListView<Document> listViewDocuments = new ListView<>(FXCollections.emptyObservableList());
     @FXML
-    public ListView<Document> listViewPrintedDocuments= new ListView<>(FXCollections.emptyObservableList());;
+    public ListView<Document> listViewPrintedDocuments = new ListView<>(FXCollections.emptyObservableList());;
     @FXML
     public ComboBox<Size> sizeDocumentComboBox;
     @FXML
     public ComboBox<Type> typeDocumentComboBox;
     @FXML
     public TextField printTimeTextArea;
-    @FXML
-    public Label qqqLable;
-
-    private PrintService printService = new PrintService(listViewPrintedDocuments);
+    private PrintService printService = new PrintService(listViewPrintedDocuments, listViewDocuments);
 
     @FXML
     void initialize() {
@@ -45,13 +43,8 @@ public class MainController {
         Size size = this.sizeDocumentComboBox.getSelectionModel().getSelectedItem();
         Type type = this.typeDocumentComboBox.getSelectionModel().getSelectedItem();
         Document document = new Document(size, type, time);
-
-//TODO переделать отображение документа
         try {
-            printService.add(document);
-            ObservableList<Document> observableList = FXCollections.observableArrayList(printService.getDocuments());
-        
-            listViewDocuments.setItems(observableList);
+            printService.addDocument(document);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -62,4 +55,8 @@ public class MainController {
     public javafx.event.EventHandler<WindowEvent> getCloseEventHandler() {
         return closeEventHandler;
     }
+
+
+
+
 }

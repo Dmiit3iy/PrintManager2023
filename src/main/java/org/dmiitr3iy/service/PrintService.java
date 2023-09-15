@@ -3,53 +3,34 @@ package org.dmiitr3iy.service;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
-import org.dmiitr3iy.App;
-import org.dmiitr3iy.controller.MainController;
 import org.dmiitr3iy.model.Document;
 
-import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class PrintService {
     private LinkedBlockingQueue<Document> documents = new LinkedBlockingQueue<>();
-
-    public LinkedBlockingQueue<Document> getDocuments() {
-        return documents;
-    }
-
+    //TODO попробовать передавать не вьюху а обсрвал листт
     public ListView<Document> listViewPrintedDocuments;
 
-    ObservableList<Document> observableList = FXCollections.observableArrayList();
+   public ListView<Document> listViewDocuments;
+
+
     private Thread thread = new Thread(new Runnable() {
         @Override
         public void run() {
             try {
                 while (true) {
                     Document document = documents.take();
-                    Thread.sleep(document.getPrintTime());
-                    //observableList = listViewPrintedDocuments.getItems();
-
-                    observableList.add(document);
-                    System.out.println(observableList);
-                    ///
-                    listViewPrintedDocuments.setItems(observableList);
-                    System.out.println(listViewPrintedDocuments);
-                    listViewPrintedDocuments.refresh();
+                    System.out.println("Получил из очереди докуменот");
+                    Thread.sleep(document.getPrintTime()*1000);
 
                     //TODO так как добавлять в графические элементы может только JavaFX
                     // поток то тут я его и создаю чтобы добавить распечатанный жокумент
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
+                    Platform.runLater(() -> {
+                        ObservableList<Document> documents1 = FXCollections.observableArrayList(document);
+                        System.out.println("В платформере "+documents1);
 
-                            listViewPrintedDocuments.setItems(observableList);
-                            System.out.println(listViewPrintedDocuments);
-                            //listViewPrintedDocuments.refresh();
-
-                        }
                     });
 
                 }
@@ -63,8 +44,9 @@ public class PrintService {
     });
 
 
-    public PrintService(ListView<Document> listViewPrintedDocuments) {
+    public PrintService(ListView<Document> listViewPrintedDocuments, ListView<Document> listViewDocuments) {
         this.listViewPrintedDocuments = listViewPrintedDocuments;
+        this.listViewDocuments = listViewDocuments;
         this.thread.start();
     }
 
@@ -72,7 +54,7 @@ public class PrintService {
         this.thread.interrupt();
     }
 
-    public void add(Document document) throws InterruptedException {
+    public void addDocument(Document document) throws InterruptedException {
         documents.put(document);
     }
 }
