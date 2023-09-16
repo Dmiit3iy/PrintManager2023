@@ -16,17 +16,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class MainController {
+    private ArrayList<Document> documentsArrayList = new ArrayList<>();
+    private ArrayList<Document> printedDocumentsArrayList = new ArrayList<>();
+    private ObservableList <Document> listViewDocumentsOL;
+    private ObservableList<Document> listViewPrintedDocumentsOL;
     @FXML
-    public ListView<Document> listViewDocuments = new ListView<>(FXCollections.emptyObservableList());
+    public ListView<Document> listViewDocuments;
     @FXML
-    public ListView<Document> listViewPrintedDocuments = new ListView<>(FXCollections.emptyObservableList());;
+    public ListView<Document> listViewPrintedDocuments;
     @FXML
     public ComboBox<Size> sizeDocumentComboBox;
     @FXML
     public ComboBox<Type> typeDocumentComboBox;
     @FXML
     public TextField printTimeTextArea;
-    private PrintService printService = new PrintService(listViewPrintedDocuments, listViewDocuments);
+    private PrintService printService;
 
     @FXML
     void initialize() {
@@ -35,6 +39,12 @@ public class MainController {
         ObservableList<Type> typeObservableList = FXCollections.observableArrayList(Type.JPG, Type.PDF, Type.TXT);
         this.typeDocumentComboBox.setItems(typeObservableList);
 
+        listViewDocumentsOL = FXCollections.observableArrayList(documentsArrayList);
+        listViewPrintedDocumentsOL = FXCollections.observableArrayList(printedDocumentsArrayList);
+
+        this.listViewPrintedDocuments.setItems(listViewPrintedDocumentsOL);
+        this.listViewDocuments.setItems(listViewDocumentsOL);
+        printService = new PrintService(listViewDocumentsOL,listViewPrintedDocumentsOL);
     }
 
 
@@ -43,6 +53,8 @@ public class MainController {
         Size size = this.sizeDocumentComboBox.getSelectionModel().getSelectedItem();
         Type type = this.typeDocumentComboBox.getSelectionModel().getSelectedItem();
         Document document = new Document(size, type, time);
+        listViewDocumentsOL.add(document);
+
         try {
             printService.addDocument(document);
         } catch (InterruptedException e) {
@@ -57,6 +69,7 @@ public class MainController {
     }
 
 
-
-
+    public void cancelPrintButton(ActionEvent actionEvent) {
+        printService.cancelPrinting();
+    }
 }
