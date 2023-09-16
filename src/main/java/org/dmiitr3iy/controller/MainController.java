@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.WindowEvent;
+import org.dmiitr3iy.App;
 import org.dmiitr3iy.model.Document;
 import org.dmiitr3iy.model.Size;
 import org.dmiitr3iy.model.Type;
@@ -14,8 +15,13 @@ import org.dmiitr3iy.service.PrintService;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainController {
+    @FXML
+    public TextField avgTimeTextField;
     private ArrayList<Document> documentsArrayList = new ArrayList<>();
     private ArrayList<Document> printedDocumentsArrayList = new ArrayList<>();
     private ObservableList <Document> listViewDocumentsOL;
@@ -71,5 +77,39 @@ public class MainController {
 
     public void cancelPrintButton(ActionEvent actionEvent) {
         printService.cancelPrinting();
+    }
+
+
+    public void avgTimeButton(ActionEvent actionEvent) {
+        String msg = String.valueOf(printService.avgPrintTime())+" секунд(ы)";
+        App.showMessage("Среднее время печати", msg, Alert.AlertType.INFORMATION);
+    }
+
+    public void sortByTypeButton(ActionEvent actionEvent) {
+        Collections.sort(listViewPrintedDocumentsOL, new Comparator<Document>() {
+            @Override
+            public int compare(Document o1, Document o2) {
+                return o1.getType().toString().compareTo(o2.getType().toString());
+            }});
+
+    }
+
+    public void sortByTimeButton(ActionEvent actionEvent) {
+        Collections.sort(listViewPrintedDocumentsOL, new Comparator<Document>() {
+            @Override
+            public int compare(Document o1, Document o2) {
+                return Long.compare(o1.getPrintTime(),o2.getPrintTime());
+            }});
+    }
+
+    public void sortBySizeButton(ActionEvent actionEvent) {
+        Collections.sort(listViewPrintedDocumentsOL, new Comparator<Document>() {
+            @Override
+            public int compare(Document o1, Document o2) {
+                return o1.getSize().compareTo(o2.getSize());
+            }});
+    }
+
+    public void noSortButton(ActionEvent actionEvent) {
     }
 }

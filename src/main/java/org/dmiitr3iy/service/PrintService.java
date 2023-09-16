@@ -67,4 +67,9 @@ public class PrintService {
             lock.notify();
         }
     }
+
+
+    public double avgPrintTime(){
+        return  listViewPrintedDocumentsOL.stream().mapToLong(e -> e.getPrintTime()).average().orElse(0);
+    }
 }
