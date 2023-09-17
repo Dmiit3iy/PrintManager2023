@@ -69,7 +69,7 @@ public class MainController {
      */
     public void printButton(ActionEvent actionEvent) {
         String time = printTimeTextArea.getText();
-        if (time.matches("\\d")) {
+        if (time.matches("\\d+")) {
 
             Size size = this.sizeDocumentComboBox.getSelectionModel().getSelectedItem();
             Type type = this.typeDocumentComboBox.getSelectionModel().getSelectedItem();
