@@ -12,11 +12,14 @@ import javafx.stage.StageStyle;
 import org.dmiitr3iy.App;
 import org.dmiitr3iy.controller.SecondController;
 import org.dmiitr3iy.model.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class PrintService {
+    private static final Logger logger = LoggerFactory.getLogger(PrintService.class);
     private Object lock = new Object();
     private LinkedBlockingQueue<Document> documents = new LinkedBlockingQueue<>();
     private ObservableList<Document> listViewDocumentsOL;
@@ -47,8 +50,7 @@ public class PrintService {
                         }
                     }
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {
             }
         }
     });
@@ -62,9 +64,11 @@ public class PrintService {
 
     /**
      * Остановка диспетчера. Печать документов в очереди отменяется. На выходе должен быть список ненапечатанных документов.
+     *
      * @throws IOException
      */
     public void stop() throws IOException {
+        logger.info("Запуск  метода остановки диспетчера печати");
         this.thread.interrupt();
         FXMLLoader loader = new FXMLLoader(App.class.getResource("second.fxml"));
         Stage stage = new Stage(StageStyle.DECORATED);
@@ -76,17 +80,20 @@ public class PrintService {
 
     /**
      * Метод для принятия документа на печать
+     *
      * @param document
      * @throws InterruptedException
      */
     public void addDocument(Document document) throws InterruptedException {
+        logger.info("Запуск  метода отправки на печать");
         documents.put(document);
     }
 
     /**
-     * Метод для отмены печатющегося документа
+     * Метод для отмены печатающегося документа
      */
     public void cancelPrinting() {
+        logger.info("Запуск  метода отмены печатающегося документа");
         synchronized (lock) {
             lock.notify();
         }
@@ -96,7 +103,8 @@ public class PrintService {
      * Метод для расчета среднего времени печати
      * @return
      */
-    public double avgPrintTime(){
-        return  listViewPrintedDocumentsOL.stream().mapToLong(e -> e.getPrintTime()).average().orElse(0);
+    public double avgPrintTime() {
+        logger.info("Запуск  метода подсчета среднего времени печати");
+        return listViewPrintedDocumentsOL.stream().mapToLong(e -> e.getPrintTime()).average().orElse(0);
     }
 }

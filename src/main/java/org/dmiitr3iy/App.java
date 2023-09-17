@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import org.slf4j.*;
+
 import org.dmiitr3iy.controller.MainController;
 
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.io.IOException;
  * JavaFX App
  */
 public class App extends Application {
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(App.class);
 
     private static Scene scene;
 
@@ -38,7 +41,9 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        logger.debug("Запуск приложения");
         launch();
+        logger.debug("Выключение приложения");
     }
 
     public static void showMessage(String title, String message, Alert.AlertType alertType) {

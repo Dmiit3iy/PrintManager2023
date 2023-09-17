@@ -17,6 +17,8 @@ import org.dmiitr3iy.model.Document;
 import org.dmiitr3iy.model.Size;
 import org.dmiitr3iy.model.Type;
 import org.dmiitr3iy.service.PrintService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,8 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainController {
-    @FXML
-    public TextField avgTimeTextField;
+    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
     private ArrayList<Document> documentsArrayList = new ArrayList<>();
     private ArrayList<Document> printedDocumentsArrayList = new ArrayList<>();
     private ObservableList<Document> listViewDocumentsOL;
@@ -55,10 +56,8 @@ public class MainController {
         ObservableList<Type> typeObservableList = FXCollections.observableArrayList(Type.JPG, Type.PDF, Type.TXT);
         this.typeDocumentComboBox.setItems(typeObservableList);
         this.typeDocumentComboBox.getSelectionModel().selectFirst();
-
         listViewDocumentsOL = FXCollections.observableArrayList(documentsArrayList);
         listViewPrintedDocumentsOL = FXCollections.observableArrayList(printedDocumentsArrayList);
-
         this.listViewDocuments.setItems(listViewDocumentsOL);
         printService = new PrintService(listViewDocumentsOL, listViewPrintedDocumentsOL);
     }
@@ -79,9 +78,11 @@ public class MainController {
             try {
                 printService.addDocument(document);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                logger.error("Исключение при добавлении в очередь печати: ", e);
             }
-        } else App.showMessage("Ошибка", "Введите время печати в цифрах", Alert.AlertType.ERROR);
+        } else {
+            logger.error("Ошибка ввода данных в поле для времени печати");
+            App.showMessage("Ошибка", "Введите время печати в цифрах", Alert.AlertType.ERROR);}
         printTimeTextArea.clear();
 
     }
@@ -93,7 +94,7 @@ public class MainController {
         try {
             printService.stop();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("Исключение при остановке диспетчера печати: ", e);
         }
     };
 
@@ -182,6 +183,7 @@ public class MainController {
      * @throws IOException
      */
     public void loadNewScene(ObservableList<Document> sortedList) throws IOException {
+        logger.info("Запуск нового окна для отображения напечатанных документов");
         FXMLLoader loader = new FXMLLoader(App.class.getResource("second.fxml"));
         Stage stage = new Stage(StageStyle.DECORATED);
         stage.setScene(new Scene(loader.load()));
