@@ -44,6 +44,9 @@ public class MainController {
     public TextField printTimeTextArea;
     private PrintService printService;
 
+    /**
+     * Блок предварительной инициализации
+     */
     @FXML
     void initialize() {
         ObservableList<Size> sizeObservableList = FXCollections.observableArrayList(Size.A0, Size.A1, Size.A2, Size.A3);
@@ -60,17 +63,17 @@ public class MainController {
         printService = new PrintService(listViewDocumentsOL, listViewPrintedDocumentsOL);
     }
 
-
+    /**
+     * Метод для кнопки "отправить на печать". Получает данные из форм, создает объект и отправляет на "печать".
+     * @param actionEvent
+     */
     public void printButton(ActionEvent actionEvent) {
         String time = printTimeTextArea.getText();
         if (time.matches("\\d")) {
 
             Size size = this.sizeDocumentComboBox.getSelectionModel().getSelectedItem();
             Type type = this.typeDocumentComboBox.getSelectionModel().getSelectedItem();
-
             Document document = new Document(size, type, Long.parseLong(time));
-
-
             listViewDocumentsOL.add(document);
 
             try {
@@ -83,6 +86,9 @@ public class MainController {
 
     }
 
+    /**
+     * Метод для остановки печати. Вызывается при закрытии основного окна через символ закрытия окна (крестик).
+     */
     private javafx.event.EventHandler<WindowEvent> closeEventHandler = event -> {
         try {
             printService.stop();
@@ -95,17 +101,28 @@ public class MainController {
         return closeEventHandler;
     }
 
-
+    /**
+     * Метод для кнопки "Отмена печати"
+     * @param actionEvent
+     */
     public void cancelPrintButton(ActionEvent actionEvent) {
         printService.cancelPrinting();
     }
 
-
+    /**
+     * Метод для кнопки подсчета "Среднее время печати"
+     * @param actionEvent
+     */
     public void avgTimeButton(ActionEvent actionEvent) {
         String msg = String.valueOf(printService.avgPrintTime()) + " секунд(ы)";
         App.showMessage("Среднее время печати", msg, Alert.AlertType.INFORMATION);
     }
 
+    /**
+     * Метод для кнопки сортировки напечатанных документов "По типу документа"
+     * @param actionEvent
+     * @throws IOException
+     */
     public void sortByTypeButton(ActionEvent actionEvent) throws IOException {
         ObservableList<Document> sortedList = FXCollections.observableArrayList(listViewPrintedDocumentsOL);
         Collections.sort(sortedList, new Comparator<Document>() {
@@ -117,6 +134,11 @@ public class MainController {
         loadNewScene(sortedList);
     }
 
+    /**
+     * Метод для кнопки сортировки напечатанных документов "По времени печати"
+     * @param actionEvent
+     * @throws IOException
+     */
     public void sortByTimeButton(ActionEvent actionEvent) throws IOException {
         ObservableList<Document> sortedList = FXCollections.observableArrayList(listViewPrintedDocumentsOL);
         Collections.sort(sortedList, new Comparator<Document>() {
@@ -125,10 +147,14 @@ public class MainController {
                 return Long.compare(o1.getPrintTime(), o2.getPrintTime());
             }
         });
-
         loadNewScene(sortedList);
     }
 
+    /**
+     * Метод для кнопки сортировки напечатанных документов "По размеру печати"
+     * @param actionEvent
+     * @throws IOException
+     */
     public void sortBySizeButton(ActionEvent actionEvent) throws IOException {
         ObservableList<Document> sortedList = FXCollections.observableArrayList(listViewPrintedDocumentsOL);
         Collections.sort(sortedList, new Comparator<Document>() {
@@ -140,10 +166,21 @@ public class MainController {
         loadNewScene(sortedList);
     }
 
+    /**
+     * Метод для кнопки сортировки напечатанных документов "По порядку печати"
+     * @param actionEvent
+     * @throws IOException
+     */
+
     public void noSortButton(ActionEvent actionEvent) throws IOException {
         loadNewScene(listViewPrintedDocumentsOL);
     }
 
+    /**
+     * Метод для отображения нового окна
+     * @param sortedList
+     * @throws IOException
+     */
     public void loadNewScene(ObservableList<Document> sortedList) throws IOException {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("second.fxml"));
         Stage stage = new Stage(StageStyle.DECORATED);

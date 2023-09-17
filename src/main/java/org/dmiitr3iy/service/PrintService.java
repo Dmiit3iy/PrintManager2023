@@ -60,6 +60,10 @@ public class PrintService {
         this.thread.start();
     }
 
+    /**
+     * Остановка диспетчера. Печать документов в очереди отменяется. На выходе должен быть список ненапечатанных документов.
+     * @throws IOException
+     */
     public void stop() throws IOException {
         this.thread.interrupt();
         FXMLLoader loader = new FXMLLoader(App.class.getResource("second.fxml"));
@@ -70,17 +74,28 @@ public class PrintService {
         stage.show();
     }
 
+    /**
+     * Метод для принятия документа на печать
+     * @param document
+     * @throws InterruptedException
+     */
     public void addDocument(Document document) throws InterruptedException {
         documents.put(document);
     }
 
+    /**
+     * Метод для отмены печатющегося документа
+     */
     public void cancelPrinting() {
         synchronized (lock) {
             lock.notify();
         }
     }
 
-
+    /**
+     * Метод для расчета среднего времени печати
+     * @return
+     */
     public double avgPrintTime(){
         return  listViewPrintedDocumentsOL.stream().mapToLong(e -> e.getPrintTime()).average().orElse(0);
     }
