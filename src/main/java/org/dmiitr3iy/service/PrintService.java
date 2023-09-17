@@ -3,11 +3,17 @@ package org.dmiitr3iy.service;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.dmiitr3iy.App;
+import org.dmiitr3iy.controller.SecondController;
 import org.dmiitr3iy.model.Document;
 
+import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class PrintService {
@@ -54,8 +60,14 @@ public class PrintService {
         this.thread.start();
     }
 
-    public void stop() {
+    public void stop() throws IOException {
         this.thread.interrupt();
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("second.fxml"));
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setScene(new Scene(loader.load()));
+        SecondController controller = loader.getController();
+        controller.initData(listViewPrintedDocumentsOL);
+        stage.show();
     }
 
     public void addDocument(Document document) throws InterruptedException {
