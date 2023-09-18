@@ -1,12 +1,10 @@
 package org.dmiitr3iy.service;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.dmiitr3iy.App;
@@ -14,14 +12,14 @@ import org.dmiitr3iy.controller.SecondController;
 import org.dmiitr3iy.model.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class PrintService {
     private static final Logger logger = LoggerFactory.getLogger(PrintService.class);
     private Object lock = new Object();
-    private LinkedBlockingQueue<Document> documents = new LinkedBlockingQueue<>();
+    private BlockingQueue<Document> documentsQueue = new LinkedBlockingQueue<>();
     private ObservableList<Document> listViewDocumentsOL;
     private ObservableList<Document> listViewPrintedDocumentsOL;
 
@@ -31,7 +29,7 @@ public class PrintService {
         public void run() {
             try {
                 while (true) {
-                    Document document = documents.take();
+                    Document document = documentsQueue.take();
                     synchronized (lock) {
                         long t1 = System.currentTimeMillis();
                         lock.wait(document.getPrintTime() * 1000);
@@ -41,7 +39,6 @@ public class PrintService {
                                 listViewDocumentsOL.remove(document);
                                 App.showMessage("отмена печати", "Документ: " + document + " снят с печати", Alert.AlertType.INFORMATION);
                             });
-
                         } else {
                             Platform.runLater(() -> {
                                 listViewDocumentsOL.remove(document);
@@ -86,7 +83,7 @@ public class PrintService {
      */
     public void addDocument(Document document) throws InterruptedException {
         logger.info("Запуск  метода отправки на печать");
-        documents.put(document);
+        documentsQueue.put(document);
     }
 
     /**

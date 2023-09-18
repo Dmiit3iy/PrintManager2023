@@ -1,6 +1,5 @@
 package org.dmiitr3iy.controller;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import lombok.NonNull;
 import org.dmiitr3iy.App;
 import org.dmiitr3iy.model.Document;
 import org.dmiitr3iy.model.Size;
@@ -19,13 +17,12 @@ import org.dmiitr3iy.model.Type;
 import org.dmiitr3iy.service.PrintService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class MainController {
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
@@ -35,8 +32,7 @@ public class MainController {
     private ObservableList<Document> listViewPrintedDocumentsOL;
     @FXML
     public ListView<Document> listViewDocuments;
-    @FXML
-    public ListView<Document> listViewPrintedDocuments;
+
     @FXML
     public ComboBox<Size> sizeDocumentComboBox;
     @FXML
@@ -115,7 +111,8 @@ public class MainController {
      * @param actionEvent
      */
     public void avgTimeButton(ActionEvent actionEvent) {
-        String msg = String.valueOf(printService.avgPrintTime()) + " секунд(ы)";
+        DecimalFormat dF = new DecimalFormat( "#.#" );
+        String msg = (dF.format(printService.avgPrintTime())) + " секунд(ы)";
         App.showMessage("Среднее время печати", msg, Alert.AlertType.INFORMATION);
     }
 

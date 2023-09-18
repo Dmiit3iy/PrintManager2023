@@ -46,6 +46,12 @@ public class App extends Application {
         logger.debug("Выключение приложения");
     }
 
+    /**
+     * Метод для отображения окна уведомлений
+     * @param title
+     * @param message
+     * @param alertType
+     */
     public static void showMessage(String title, String message, Alert.AlertType alertType) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
